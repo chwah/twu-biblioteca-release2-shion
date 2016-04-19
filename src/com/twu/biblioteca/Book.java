@@ -3,37 +3,13 @@ package com.twu.biblioteca;
 /**
  * Created by shion on 13/04/2016.
  */
-public class Book {
-    private String title;
-    private String author;
-    private int yearPublished;
-    private boolean checkedOut;
-
+public class Book extends Medium {
     public Book(String title, String author, int yearPublished) {
-        this.title = title;
-        this.author = author;
-        this.yearPublished = yearPublished;
-        this.checkedOut = false;
-    }
-
-    public String getTitle() {
-        return title;
+        super(title, author, yearPublished);
     }
 
     public String getAuthor() {
-        return author;
-    }
-
-    public int getYearPublished() {
-        return yearPublished;
-    }
-
-    public void setCheckedOut(boolean checkedOut) {
-        this.checkedOut = checkedOut;
-    }
-
-    public boolean isAvailable() {
-        return !checkedOut;
+        return super.getCreator();
     }
 
     public String toString() {

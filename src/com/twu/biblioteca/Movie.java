@@ -3,18 +3,29 @@ package com.twu.biblioteca;
 /**
  * Created by shion on 19/4/16.
  */
-public class Movie {
-    private String title;
-    private String director;
-    private int yearPublished;
+public class Movie extends Medium {
     private int rating;
-    private boolean checkedOut;
+
 
     public Movie(String title, String director, int yearPublished, int rating) {
-        this.title = title;
-        this.director = director;
-        this.yearPublished = yearPublished;
+        super(title, director, yearPublished);
         this.rating = rating;
-        this.checkedOut = false;
+    }
+
+    public String getDirector() {
+        return super.getCreator();
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public String toString() {
+        String str = "";
+        str += "Title: " + getTitle() + ", ";
+        str += "Author: " + getDirector() + ", ";
+        str += "Year Published: " + getYearPublished() + ", ";
+        str += "Rating: " + (getRating() == 0 ? "unrated" : String.valueOf(getRating()));
+        return str;
     }
 }
