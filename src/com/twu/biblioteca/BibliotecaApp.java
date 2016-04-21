@@ -9,10 +9,12 @@ public class BibliotecaApp {
     }
 
     private static void populateLibrary(Library library) {
-        int totalBooks = 2;
-        for (int i = 1 ; i <= totalBooks ; i++) {
+        int totalUniqueMedium = 3;
+        for (int i = 1 ; i <= totalUniqueMedium ; i++) {
             Book book = new Book("Book Title " + i, "Author " + i, 2000 + i);
-            library.addBook(book);
+            Movie movie = new Movie("Movie Title " + i, "Director " + i, 2000 + i, i);
+            library.add(book);
+            library.add(movie);
         }
     }
 }

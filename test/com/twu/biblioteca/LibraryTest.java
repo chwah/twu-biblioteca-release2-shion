@@ -16,6 +16,27 @@ public class LibraryTest {
 
         assertTrue(library.getName() == "Test Library");
         assertTrue(library.getBooks().isEmpty() == true);
+        assertTrue(library.getMovies().isEmpty() == true);
+    }
+
+    @Test
+    public void bookIsValid() {
+        Library library = new Library("Test Library");
+        Book book = new Book("Test Title", "Test Author", 2016);
+
+        assertTrue(library.isValidBook(book) == true);
+    }
+
+    @Test
+    public void bookIsNotValid() {
+        Library library = new Library("Test Library");
+        Book book1 = new Book("", "Test Author", 2016);
+        Book book2 = new Book("Test Title", "", 2016);
+        Book book3 = new Book("Test Title", "Test Author", 0);
+
+        assertTrue(library.isValidBook(book1) == false);
+        assertTrue(library.isValidBook(book2) == false);
+        assertTrue(library.isValidBook(book3) == false);
     }
 
     @Test
@@ -23,21 +44,14 @@ public class LibraryTest {
         Library library = new Library("Test Library");
         Book book1 = new Book("Test Title 1", "Test Author 1", 2016);
         Book book2 = new Book("Test Title 2", "Test Author 2", 2015);
-        library.addBook(book1);
-        library.addBook(book2);
+        library.add(book1);
+        library.add(book2);
 
         ArrayList<Book> books = library.getBooks();
+
         assertTrue(books.size() == 2);
-
         assertTrue(books.contains(book1) == true);
-        assertTrue(books.get(0).getTitle() == "Test Title 1");
-        assertTrue(books.get(0).getAuthor() == "Test Author 1");
-        assertTrue(books.get(0).getYearPublished() == 2016);
-
         assertTrue(books.contains(book2) == true);
-        assertTrue(books.get(1).getTitle() == "Test Title 2");
-        assertTrue(books.get(1).getAuthor() == "Test Author 2");
-        assertTrue(books.get(1).getYearPublished() == 2015);
     }
 
     @Test
@@ -45,7 +59,7 @@ public class LibraryTest {
         Library library = new Library("Test Library");
         Book book = new Book("Available Title", "Test Author", 2016);
 
-        assertTrue(library.addBook(book) != null);
+        assertTrue(library.add(book) != null);
     }
 
     @Test
@@ -55,9 +69,9 @@ public class LibraryTest {
         Book book2 = new Book("Test Title", "", 2016);
         Book book3 = new Book("Test Title", "Test Author", 0);
 
-        assertTrue(library.addBook(book1) == null);
-        assertTrue(library.addBook(book2) == null);
-        assertTrue(library.addBook(book3) == null);
+        assertTrue(library.add(book1) == null);
+        assertTrue(library.add(book2) == null);
+        assertTrue(library.add(book3) == null);
     }
 
     @Test
@@ -66,9 +80,9 @@ public class LibraryTest {
 
         Book book = new Book("Available Title", "Test Author", 2016);
         book.setCheckedOut(false);
-        library.addBook(book);
+        library.add(book);
 
-        assertTrue(library.checkOutWithBookTitle("Available Title") == true);
+        assertTrue(library.checkOutBookWithTitle("Available Title") == true);
         assertTrue(book.isAvailable() == false);
     }
 
@@ -78,10 +92,11 @@ public class LibraryTest {
 
         Book book = new Book("Unavailable Title", "Test Author", 2016);
         book.setCheckedOut(true);
-        library.addBook(book);
+        library.add(book);
 
-        assertTrue(library.checkOutWithBookTitle("Unavailable Title") == false);
-        assertTrue(library.checkOutWithBookTitle("Non-existent Title") == false);
+        assertTrue(library.checkOutBookWithTitle("Unavailable Title") == false);
+        assertTrue(library.checkOutBookWithTitle("Non-existent Title") == false);
+        assertTrue(book.isAvailable() == false);
     }
 
     @Test
@@ -90,9 +105,9 @@ public class LibraryTest {
 
         Book book = new Book("Unavailable Title", "Test Author", 2016);
         book.setCheckedOut(true);
-        library.addBook(book);
+        library.add(book);
 
-        assertTrue(library.returnWithBookTitle("Unavailable Title") == true);
+        assertTrue(library.returnBookWithTitle("Unavailable Title") == true);
         assertTrue(book.isAvailable() == true);
     }
 
@@ -102,9 +117,117 @@ public class LibraryTest {
 
         Book book = new Book("Available Title", "Test Author", 2016);
         book.setCheckedOut(false);
-        library.addBook(book);
+        library.add(book);
 
-        assertTrue(library.returnWithBookTitle("Available Title") == false);
-        assertTrue(library.returnWithBookTitle("Non-existent Title") == false);
+        assertTrue(library.returnBookWithTitle("Available Title") == false);
+        assertTrue(library.returnBookWithTitle("Non-existent Title") == false);
+    }
+
+    @Test
+    public void movieIsValid() {
+        Library library = new Library("Test Library");
+        Movie movie = new Movie("Test Title", "Test Director", 2016, 10);
+
+        assertTrue(library.isValidMovie(movie) == true);
+    }
+
+    @Test
+    public void movieIsNotValid() {
+        Library library = new Library("Test Library");
+        Movie movie1 = new Movie("", "Test Director", 2016, 10);
+        Movie movie2 = new Movie("Test Title", "", 2016, 10);
+        Movie movie3 = new Movie("Test Title", "Test Director", 0, 10);
+        Movie movie4 = new Movie("Test Title", "Test Director", 2016, 100);
+
+        assertTrue(library.isValidMovie(movie1) == false);
+        assertTrue(library.isValidMovie(movie2) == false);
+        assertTrue(library.isValidMovie(movie3) == false);
+        assertTrue(library.isValidMovie(movie4) == false);
+    }
+
+    @Test
+    public void getListOfMovies() {
+        Library library = new Library("Test Library");
+        Movie movie1 = new Movie("Test Title 1", "Test Director", 2016, 10);
+        Movie movie2 = new Movie("Test Title 1", "Test Director", 2015, 9);
+        library.add(movie1);
+        library.add(movie2);
+
+        ArrayList<Movie> movies = library.getMovies();
+
+        assertTrue(movies.size() == 2);
+        assertTrue(movies.contains(movie1) == true);
+        assertTrue(movies.contains(movie2) == true);
+    }
+
+    @Test
+    public void canAddMovie() {
+        Library library = new Library("Test Library");
+        Movie movie = new Movie("Test Title", "Test Director", 2016, 10);
+
+        assertTrue(library.add(movie) != null);
+    }
+
+    @Test
+    public void cannotAddMovie() {
+        Library library = new Library("Test Library");
+        Movie movie1 = new Movie("", "Test Director", 2016, 10);
+        Movie movie2 = new Movie("Test Title", "", 2016, 10);
+        Movie movie3 = new Movie("Test Title", "Test Director", 0, 10);
+        Movie movie4 = new Movie("Test Title", "Test Director", 2016, 100);
+
+        assertTrue(library.add(movie1) == null);
+        assertTrue(library.add(movie2) == null);
+        assertTrue(library.add(movie3) == null);
+        assertTrue(library.add(movie4) == null);
+    }
+
+    @Test
+    public void successfullyCheckOutMovie() {
+        Library library = new Library("Test Library");
+
+        Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
+        movie.setCheckedOut(false);
+        library.add(movie);
+
+        assertTrue(library.checkOutMovieWithTitle("Available Title") == true);
+        assertTrue(movie.isAvailable() == false);
+    }
+
+    @Test
+    public void unsuccessfullyCheckOutMovie() {
+        Library library = new Library("Test Library");
+
+        Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
+        movie.setCheckedOut(true);
+        library.add(movie);
+
+        assertTrue(library.checkOutMovieWithTitle("Unavailable Title") == false);
+        assertTrue(library.checkOutMovieWithTitle("Non-existent Title") == false);
+        assertTrue(movie.isAvailable() == false);
+    }
+
+    @Test
+    public void successfullyReturnMovie() {
+        Library library = new Library("Test Library");
+
+        Movie movie = new Movie("Unavailable Title", "Test Director", 2016, 10);
+        movie.setCheckedOut(true);
+        library.add(movie);
+
+        assertTrue(library.returnMovieWithTitle("Unavailable Title") == true);
+        assertTrue(movie.isAvailable() == true);
+    }
+
+    @Test
+    public void unsuccessfullyReturnMovie() {
+        Library library = new Library("Test Library");
+
+        Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
+        movie.setCheckedOut(false);
+        library.add(movie);
+
+        assertTrue(library.returnMovieWithTitle("Available Title") == false);
+        assertTrue(library.returnMovieWithTitle("Non-existent Title") == false);
     }
 }

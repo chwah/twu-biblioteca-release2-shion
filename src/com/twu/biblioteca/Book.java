@@ -12,6 +12,10 @@ public class Book extends Medium {
         return super.getCreator();
     }
 
+    public boolean isValidBook() {
+        return super.isValidMedium();
+    }
+
     public String toString() {
         String str = "";
         str += "Title: " + getTitle() + ", ";

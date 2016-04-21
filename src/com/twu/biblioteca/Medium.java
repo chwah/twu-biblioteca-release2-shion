@@ -36,6 +36,13 @@ public class Medium {
         return !checkedOut;
     }
 
+    protected boolean isValidMedium() {
+        if (getTitle().length() > 0 && getCreator().length() > 0 && getYearPublished() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public String toString() {
         String str = "";
         str += "Title: " + getTitle() + ", ";

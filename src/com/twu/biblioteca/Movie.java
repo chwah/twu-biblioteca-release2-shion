@@ -6,7 +6,6 @@ package com.twu.biblioteca;
 public class Movie extends Medium {
     private int rating;
 
-
     public Movie(String title, String director, int yearPublished, int rating) {
         super(title, director, yearPublished);
         this.rating = rating;
@@ -16,8 +15,16 @@ public class Movie extends Medium {
         return super.getCreator();
     }
 
+    public boolean isValidMovie() {
+        return super.isValidMedium() && hasValidRating();
+    }
+
     public int getRating() {
         return rating;
+    }
+
+    private boolean hasValidRating() {
+        return rating >= 0 && rating <= 10;
     }
 
     public String toString() {
