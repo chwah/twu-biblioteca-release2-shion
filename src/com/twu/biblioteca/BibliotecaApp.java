@@ -12,9 +12,9 @@ public class BibliotecaApp {
         int totalUniqueMedium = 3;
         for (int i = 1 ; i <= totalUniqueMedium ; i++) {
             Book book = new Book("Book Title " + i, "Author " + i, 2000 + i);
-            Movie movie = new Movie("Movie Title " + i, "Director " + i, 2000 + i, i);
-            library.add(book);
-            library.add(movie);
+            Movie movie = new Movie("Movie Title " + i, "Director " + i, 2000 + i, i-1);
+            library.addBook(book);
+            library.addMovie(movie);
         }
     }
 }

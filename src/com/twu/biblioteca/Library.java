@@ -7,115 +7,110 @@ import java.util.ArrayList;
  */
 public class Library {
     private String name;
-    private ArrayList<Book> books;
-    private ArrayList<Movie> movies;
+    private ArrayList<Medium> books;
+    private ArrayList<Medium> movies;
     private final int INPUT_TO_QUIT = 9;
 
     Library(String name) {
         this.name = name;
-        books = new ArrayList<Book>();
-        movies = new ArrayList<Movie>();
+        books = new ArrayList<Medium>();
+        movies = new ArrayList<Medium>();
     }
 
     public String getName() {
         return name;
     }
 
-    protected Medium add(Medium medium) {
-        if (medium instanceof Book && isValidBook((Book) medium)) {
-            books.add((Book) medium);
-            return (Book) medium;
-        } else if (medium instanceof Movie && isValidMovie((Movie) medium)) {
-            movies.add((Movie) medium);
-            return (Movie) medium;
+    private Medium addMedium(Medium medium, ArrayList<Medium> mediumArrayList) {
+        mediumArrayList.add(medium);
+        return medium;
+    }
+
+    protected Book addBook(Book book) {
+        if (book instanceof Book && isValidBook(book)) {
+            return (Book) addMedium(book, books);
         }
         return null;
     }
 
-    protected ArrayList<Book> getBooks() {
+    protected Movie addMovie(Movie movie) {
+        if (movie instanceof Movie && isValidMovie(movie)) {
+            return (Movie) addMedium(movie, movies);
+        }
+        return null;
+    }
+
+    protected ArrayList<Medium> getBooks() {
         return books;
     }
 
-    protected ArrayList<Movie> getMovies() {
+    protected ArrayList<Medium> getMovies() {
         return movies;
     }
 
-    protected Book getBookWithTitle(String bookTitle) {
-        for (Book b : books) {
-            if (b.getTitle().equalsIgnoreCase(bookTitle)) return b;
+    private Medium getMediumInList(String title, ArrayList<Medium> mediumArrayList) {
+        for (Medium medium : mediumArrayList) {
+            if (medium.getTitle().equalsIgnoreCase(title)) return medium;
         }
         return null;
+    }
+
+    protected Book getBookWithTitle(String bookTitle) {
+        return (Book) getMediumInList(bookTitle, books);
     }
 
     protected Movie getMovieWithTitle(String movieTitle) {
-        for (Movie m : movies) {
-            if (m.getTitle().equalsIgnoreCase(movieTitle)) return m;
-        }
-        return null;
+        return (Movie) getMediumInList(movieTitle, movies);
     }
 
-    protected void listBooks() {
-        System.out.println("List All Books");
-
+    private void listMediumTitles(ArrayList<Medium> mediumArrayList) {
         int counter = 0;
-        for (Book b : books) {
-            if (b.isAvailable()) {
+
+        for (Medium medium : mediumArrayList) {
+            if (medium.isAvailable()) {
                 counter++;
-                System.out.println(counter + ". " + b.getTitle());
+                System.out.println(counter + ". " + medium.getTitle());
             }
         }
 
-        if (counter == 0) System.out.println("There is no book available at the moment.");
+        if (counter == 0) System.out.println("There is no title available at the moment.");
 
         System.out.println();
     }
 
-    protected void listMovies() {
-        System.out.println("List All Movies");
+    protected void listBooks() {
+        System.out.println("List All Available Books");
+        listMediumTitles(books);
+    }
 
+    protected void listMovies() {
+        System.out.println("List All Available Movies");
+        listMediumTitles(movies);
+    }
+
+    private void listMediumWithDetails(ArrayList<Medium> mediumArrayList) {
         int counter = 0;
-        for (Movie m : movies) {
-            if (m.isAvailable()) {
+
+        for (Medium medium : mediumArrayList) {
+            if (medium.isAvailable()) {
                 counter++;
-                System.out.println(counter + ". " + m.getTitle());
+                System.out.println(counter + ". " + medium.toString());
             }
         }
 
-        if (counter == 0) System.out.println("There is no movie available at the moment.");
+        if (counter == 0) System.out.println("There is no title available at the moment.");
 
         System.out.println();
     }
 
     protected void listBooksWithDetails() {
-        System.out.println("List All Books with Details");
-
-        int counter = 0;
-        for (Book b : books) {
-            if (b.isAvailable()) {
-                counter++;
-                System.out.println(counter + ". " + b.toString());
-            }
-        }
-
-        if (counter == 0) System.out.println("There is no book available at the moment.");
-
-        System.out.println();
+        System.out.println("List All Available Books with Details");
+        listMediumWithDetails(books);
     }
 
     protected void listMoviesWithDetails() {
-        System.out.println("List All Movies with Details");
-
-        int counter = 0;
-        for (Movie m : movies) {
-            if (m.isAvailable()) {
-                counter++;
-                System.out.println(counter + ". " + m.toString());
-            }
-        }
-
-        if (counter == 0) System.out.println("There is no movie available at the moment.");
-
-        System.out.println();
+        System.out.println("List All Available Movies with Details");
+        listMediumWithDetails(movies);
     }
 
     protected boolean isValidBook(Book book) {
@@ -142,24 +137,21 @@ public class Library {
                     listBooks();
                     break;
                 case 2:
-                    listMovies();
-                    break;
-                case 3:
                     listBooksWithDetails();
                     break;
-                case 4:
+                case 3:
                     listMoviesWithDetails();
                     break;
-                case 5:
+                case 4:
                     showCheckOutBookMenu();;
                     break;
-                case 6:
+                case 5:
                     showCheckOutMovieMenu();;
                     break;
-                case 7:
+                case 6:
                     showReturnBookMenu();
                     break;
-                case 8:
+                case 7:
                     showReturnMovieMenu();
                     break;
                 case INPUT_TO_QUIT:
@@ -174,14 +166,13 @@ public class Library {
     private void showMenu() {
         String str = "";
         str += "1. List Books\n";
-        str += "2. List Movies\n";
-        str += "3. List Books with Details\n";
-        str += "4. List Movies with Details\n";
-        str += "5. Checkout Book\n";
-        str += "6. Checkout Movie\n";
-        str += "7. Return Book\n";
-        str += "8. Return Movie\n";
-        str += "9. Quit\n\n";
+        str += "2. List Books with Details\n";
+        str += "3. List Movies\n";
+        str += "4. Checkout Book\n";
+        str += "5. Checkout Movie\n";
+        str += "6. Return Book\n";
+        str += "7. Return Movie\n";
+        str += "8. Quit\n\n";
         str += "Input: ";
         System.out.print(str);
     }
@@ -191,83 +182,99 @@ public class Library {
     }
 
     private void showCheckOutBookMenu() {
-        System.out.print("Enter Title to Borrow: ");
+        System.out.print("Enter Book Title to Borrow: ");
         String bookTitle = InputProcessor.getUserInputAsString();
         checkOutBookWithTitle(bookTitle);
         System.out.println();
     }
 
     private void showReturnBookMenu() {
-        System.out.print("Enter Title to Return: ");
+        System.out.print("Enter Book Title to Return: ");
         String bookTitle = InputProcessor.getUserInputAsString();
         returnBookWithTitle(bookTitle);
         System.out.println();
     }
 
     private void showCheckOutMovieMenu() {
-        System.out.print("Enter Title to Borrow: ");
+        System.out.print("Enter Movie Title to Borrow: ");
         String movieTitle = InputProcessor.getUserInputAsString();
         checkOutMovieWithTitle(movieTitle);
         System.out.println();
     }
 
     private void showReturnMovieMenu() {
-        System.out.print("Enter Title to Return: ");
+        System.out.print("Enter Movie Title to Return: ");
         String movieTitle = InputProcessor.getUserInputAsString();
         returnMovieWithTitle(movieTitle);
         System.out.println();
     }
 
-    protected boolean checkOutBookWithTitle(String bookTitle) {
-        Book book = getBookWithTitle(bookTitle);
+    private Medium checkOutMedium(Medium medium) {
+        if (medium != null && medium.isAvailable()) {
+            medium.setCheckedOut(true);
+            return medium;
+        }
+        return null;
+    }
 
-        if (book != null && book.isAvailable()) {
+    protected Book checkOutBookWithTitle(String bookTitle) {
+        Book book = getBookWithTitle(bookTitle);
+        book = (Book) checkOutMedium(book);
+
+        if (book != null) {
             System.out.println("Thank you! Enjoy the book.");
-            book.setCheckedOut(true);
-            return true;
         } else {
             System.out.println("The book is not available.");
-            return false;
         }
+
+        return book;
     }
 
-    protected boolean returnBookWithTitle(String bookTitle) {
-        Book book = getBookWithTitle(bookTitle);
-
-        if (book != null && !book.isAvailable()) {
-            System.out.println("Thank you for returning the book.");
-            book.setCheckedOut(false);
-            return true;
-        } else {
-            System.out.println("That is not a valid book to return.");
-            return false;
-        }
-    }
-
-    protected boolean checkOutMovieWithTitle(String movieTitle) {
+    protected Movie checkOutMovieWithTitle(String movieTitle) {
         Movie movie = getMovieWithTitle(movieTitle);
+        movie = (Movie) checkOutMedium(movie);
 
-        if (movie != null && movie.isAvailable()) {
+        if (movie != null) {
             System.out.println("Thank you! Enjoy the movie.");
-            movie.setCheckedOut(true);
-            return true;
         } else {
             System.out.println("The movie is not available.");
-            return false;
         }
+
+        return movie;
     }
 
-    protected boolean returnMovieWithTitle(String movieTitle) {
-        Movie movie = getMovieWithTitle(movieTitle);
+    private Medium returnMedium(Medium medium) {
+        if (medium != null && !medium.isAvailable()) {
+            medium.setCheckedOut(false);
+            return medium;
+        }
+        return null;
+    }
 
-        if (movie != null && !movie.isAvailable()) {
+    protected Book returnBookWithTitle(String bookTitle) {
+        Book book = getBookWithTitle(bookTitle);
+        book = (Book) returnMedium(book);
+
+        if (book != null) {
+            System.out.println("Thank you for returning the book.");
+        } else {
+            System.out.println("That is not a valid book to return.");
+        }
+
+        return book;
+    }
+
+    protected Movie returnMovieWithTitle(String movieTitle) {
+        Movie movie = getMovieWithTitle(movieTitle);
+        movie = (Movie) returnMedium(movie);
+
+        if (movie != null) {
             System.out.println("Thank you for returning the movie.");
-            movie.setCheckedOut(false);
-            return true;
         } else {
             System.out.println("That is not a valid movie to return.");
-            return false;
         }
+
+        return movie;
     }
 
 }

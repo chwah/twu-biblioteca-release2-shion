@@ -13,7 +13,7 @@ public class Book extends Medium {
     }
 
     public boolean isValidBook() {
-        return super.isValidMedium();
+        return super.isValid();
     }
 
     public String toString() {

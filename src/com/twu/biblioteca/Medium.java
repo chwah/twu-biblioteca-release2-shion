@@ -3,7 +3,7 @@ package com.twu.biblioteca;
 /**
  * Created by shion on 19/4/16.
  */
-public class Medium {
+public abstract class Medium {
     private String title;
     private String creator;
     private int yearPublished;
@@ -36,7 +36,7 @@ public class Medium {
         return !checkedOut;
     }
 
-    protected boolean isValidMedium() {
+    protected boolean isValid() {
         if (getTitle().length() > 0 && getCreator().length() > 0 && getYearPublished() > 0) {
             return true;
         }

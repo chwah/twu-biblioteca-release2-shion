@@ -16,7 +16,7 @@ public class Movie extends Medium {
     }
 
     public boolean isValidMovie() {
-        return super.isValidMedium() && hasValidRating();
+        return super.isValid() && hasValidRating();
     }
 
     public int getRating() {
