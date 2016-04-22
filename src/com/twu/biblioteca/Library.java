@@ -9,12 +9,16 @@ public class Library {
     private String name;
     private ArrayList<Medium> books;
     private ArrayList<Medium> movies;
-    private final int INPUT_TO_QUIT = 9;
+    private ArrayList<User> users;
+    private User currentUser;
+    private final int INPUT_TO_QUIT = 0;
 
     Library(String name) {
         this.name = name;
         books = new ArrayList<Medium>();
         movies = new ArrayList<Medium>();
+        users = new ArrayList<User>();
+        currentUser = null;
     }
 
     public String getName() {
@@ -40,12 +44,32 @@ public class Library {
         return null;
     }
 
+    protected User addUser(User user) {
+        if (user instanceof User) {
+            getUsers().add(user);
+            return user;
+        }
+        return null;
+    }
+
     protected ArrayList<Medium> getBooks() {
         return books;
     }
 
     protected ArrayList<Medium> getMovies() {
         return movies;
+    }
+
+    private ArrayList<User> getUsers() {
+        return users;
+    }
+
+    protected Book getBookWithTitle(String bookTitle) {
+        return (Book) getMediumInList(bookTitle, books);
+    }
+
+    protected Movie getMovieWithTitle(String movieTitle) {
+        return (Movie) getMediumInList(movieTitle, movies);
     }
 
     private Medium getMediumInList(String title, ArrayList<Medium> mediumArrayList) {
@@ -55,12 +79,14 @@ public class Library {
         return null;
     }
 
-    protected Book getBookWithTitle(String bookTitle) {
-        return (Book) getMediumInList(bookTitle, books);
+    protected void listBooks() {
+        System.out.println(LibraryUI.listAvailableBooksMessage());
+        listMediumTitles(books);
     }
 
-    protected Movie getMovieWithTitle(String movieTitle) {
-        return (Movie) getMediumInList(movieTitle, movies);
+    protected void listMovies() {
+        System.out.println(LibraryUI.listAvailableMoviesMessage());
+        listMediumTitles(movies);
     }
 
     private void listMediumTitles(ArrayList<Medium> mediumArrayList) {
@@ -73,19 +99,19 @@ public class Library {
             }
         }
 
-        if (counter == 0) System.out.println("There is no title available at the moment.");
+        if (counter == 0) System.out.println(LibraryUI.noTitleAvailableMessage());
 
         System.out.println();
     }
 
-    protected void listBooks() {
-        System.out.println("List All Available Books");
-        listMediumTitles(books);
+    protected void listBooksWithDetails() {
+        System.out.println(LibraryUI.listAvailableBooksMessage());
+        listMediumWithDetails(books);
     }
 
-    protected void listMovies() {
-        System.out.println("List All Available Movies");
-        listMediumTitles(movies);
+    protected void listMoviesWithDetails() {
+        System.out.println(LibraryUI.listAvailableBooksMessage());
+        listMediumWithDetails(movies);
     }
 
     private void listMediumWithDetails(ArrayList<Medium> mediumArrayList) {
@@ -98,19 +124,9 @@ public class Library {
             }
         }
 
-        if (counter == 0) System.out.println("There is no title available at the moment.");
+        if (counter == 0) System.out.println(LibraryUI.noTitleAvailableMessage());
 
         System.out.println();
-    }
-
-    protected void listBooksWithDetails() {
-        System.out.println("List All Available Books with Details");
-        listMediumWithDetails(books);
-    }
-
-    protected void listMoviesWithDetails() {
-        System.out.println("List All Available Movies with Details");
-        listMediumWithDetails(movies);
     }
 
     protected boolean isValidBook(Book book) {
@@ -122,8 +138,32 @@ public class Library {
     }
 
     protected void runLibrary() {
-        System.out.println("Welcome to " + name + " Management System");
-        runMainMenu();
+        System.out.println(LibraryUI.welcomeMessage(getName()));
+
+        runLoginMenu();
+    }
+
+    private void runLoginMenu() {
+        String inputId = "";
+        String inputPassword = "";
+
+        while (currentUser == null) {
+            System.out.print(LibraryUI.enterLoginIdMessage());
+            inputId = InputProcessor.getUserInputAsString();
+
+            System.out.print(LibraryUI.enterLoginPasswordMessage());
+            inputPassword = InputProcessor.getUserInputAsString();
+
+            login(inputId, inputPassword);
+
+            if (currentUser != null) {
+                System.out.println(LibraryUI.loginSuccessfulAsMessage(currentUser.getId()) + "\n");
+                System.out.println(LibraryUI.loginUnsuccessfulAsMessage() + "\n");
+                runMainMenu();
+            } else {
+                System.out.println(LibraryUI.loginUnsuccessfulAsMessage() + "\n");
+            }
+        }
     }
 
     private void runMainMenu() {
@@ -154,6 +194,9 @@ public class Library {
                 case 7:
                     showReturnMovieMenu();
                     break;
+                case 8:
+                    showUserSpecificMenu();
+                    break;
                 case INPUT_TO_QUIT:
                     break;
                 default:
@@ -164,57 +207,52 @@ public class Library {
     }
 
     private void showMenu() {
-        String str = "";
-        str += "1. List Books\n";
-        str += "2. List Books with Details\n";
-        str += "3. List Movies\n";
-        str += "4. Checkout Book\n";
-        str += "5. Checkout Movie\n";
-        str += "6. Return Book\n";
-        str += "7. Return Movie\n";
-        str += "8. Quit\n\n";
-        str += "Input: ";
-        System.out.print(str);
+        if (currentUser instanceof Librarian) {
+            System.out.print(LibraryUI.mainMenuLibrarian());
+        } else {
+            System.out.print(LibraryUI.mainMenuCustomer());
+        }
     }
 
     private void showInvalidInput() {
-        System.out.println("Select a valid option!\n");
+        System.out.println(LibraryUI.invalidInputMessage());
+        System.out.println();
     }
 
     private void showCheckOutBookMenu() {
-        System.out.print("Enter Book Title to Borrow: ");
+        System.out.print(LibraryUI.borrowBookMessage());
         String bookTitle = InputProcessor.getUserInputAsString();
         checkOutBookWithTitle(bookTitle);
         System.out.println();
     }
 
     private void showReturnBookMenu() {
-        System.out.print("Enter Book Title to Return: ");
+        System.out.print(LibraryUI.returnBookMessage());
         String bookTitle = InputProcessor.getUserInputAsString();
         returnBookWithTitle(bookTitle);
         System.out.println();
     }
 
     private void showCheckOutMovieMenu() {
-        System.out.print("Enter Movie Title to Borrow: ");
+        System.out.print(LibraryUI.borrowMovieMessage());
         String movieTitle = InputProcessor.getUserInputAsString();
         checkOutMovieWithTitle(movieTitle);
         System.out.println();
     }
 
     private void showReturnMovieMenu() {
-        System.out.print("Enter Movie Title to Return: ");
+        System.out.print(LibraryUI.returnMovieMessage());
         String movieTitle = InputProcessor.getUserInputAsString();
         returnMovieWithTitle(movieTitle);
         System.out.println();
     }
 
-    private Medium checkOutMedium(Medium medium) {
-        if (medium != null && medium.isAvailable()) {
-            medium.setCheckedOut(true);
-            return medium;
+    private void showUserSpecificMenu() {
+        if (currentUser instanceof Librarian) {
+            showUsersWithCheckedOutItems();
+        } else {
+            showUserInformation();
         }
-        return null;
     }
 
     protected Book checkOutBookWithTitle(String bookTitle) {
@@ -222,9 +260,9 @@ public class Library {
         book = (Book) checkOutMedium(book);
 
         if (book != null) {
-            System.out.println("Thank you! Enjoy the book.");
+            System.out.println(LibraryUI.checkOutBookSuccessfulMessage());
         } else {
-            System.out.println("The book is not available.");
+            System.out.println(LibraryUI.checkOutBookUnsuccessfulMessage());
         }
 
         return book;
@@ -235,17 +273,18 @@ public class Library {
         movie = (Movie) checkOutMedium(movie);
 
         if (movie != null) {
-            System.out.println("Thank you! Enjoy the movie.");
+            System.out.println(LibraryUI.checkOutMovieSuccessfulMessage());
         } else {
-            System.out.println("The movie is not available.");
+            System.out.println(LibraryUI.checkOutMovieUnsuccessfulMessage());
         }
 
         return movie;
     }
 
-    private Medium returnMedium(Medium medium) {
-        if (medium != null && !medium.isAvailable()) {
-            medium.setCheckedOut(false);
+    private Medium checkOutMedium(Medium medium) {
+        if (medium != null && medium.isAvailable()) {
+            medium.setCheckedOut(true);
+            currentUser.addCheckedOutItems(medium);
             return medium;
         }
         return null;
@@ -256,9 +295,9 @@ public class Library {
         book = (Book) returnMedium(book);
 
         if (book != null) {
-            System.out.println("Thank you for returning the book.");
+            System.out.println(LibraryUI.returnBookSuccessfulMessage());
         } else {
-            System.out.println("That is not a valid book to return.");
+            System.out.println(LibraryUI.returnBookUnsuccessfulMessage());
         }
 
         return book;
@@ -269,12 +308,57 @@ public class Library {
         movie = (Movie) returnMedium(movie);
 
         if (movie != null) {
-            System.out.println("Thank you for returning the movie.");
+            System.out.println(LibraryUI.returnMovieSuccessfulMessage());
         } else {
-            System.out.println("That is not a valid movie to return.");
+            System.out.println(LibraryUI.returnMovieUnsuccessfulMessage());
         }
 
         return movie;
     }
 
+    private Medium returnMedium(Medium medium) {
+        if (medium != null && !medium.isAvailable() && currentUser.hasCheckedOutItem(medium)) {
+            medium.setCheckedOut(false);
+            currentUser.removeCheckedOutItems(medium);
+            return medium;
+        }
+        return null;
+    }
+
+    private void showUsersWithCheckedOutItems() {
+        System.out.println(LibraryUI.showUsersWithCheckedOutItemsMessage());
+        for (User user : getUsers()) {
+            if (user.getCheckedOutItems().size() > 0) {
+                System.out.println(user.getId());
+
+                for (Medium medium : user.getCheckedOutItems()) {
+                    System.out.println(medium);
+                }
+
+                System.out.println();
+            }
+        }
+    }
+
+    private void showUserInformation() {
+        System.out.println(LibraryUI.showUserInformationMessage(currentUser));
+        System.out.println();
+    }
+
+    protected User login(String id, String password) {
+        for (User user : getUsers()) {
+            if (credentialsIsValid(user, id, password)) {
+                currentUser = user;
+                return currentUser;
+            }
+        }
+        return null;
+    }
+
+    private boolean credentialsIsValid(User user, String id, String password) {
+        if (user.getId().equals(id) && user.getPassword().equals(password)) {
+            return true;
+        }
+        return false;
+    }
 }

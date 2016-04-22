@@ -78,37 +78,60 @@ public class LibraryTest {
     public void successfullyCheckOutBook() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Book book = new Book("Available Title", "Test Author", 2016);
         book.setCheckedOut(false);
         library.addBook(book);
 
+        assertTrue(book.isAvailable() == true);
+        assertTrue(customer.hasCheckedOutItem(book) == false);
         assertTrue(library.checkOutBookWithTitle("Available Title") == book);
         assertTrue(book.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(book) == true);
     }
 
     @Test
     public void unsuccessfullyCheckOutBook() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Book book = new Book("Unavailable Title", "Test Author", 2016);
         book.setCheckedOut(true);
         library.addBook(book);
 
+        assertTrue(book.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(book) == false);
         assertTrue(library.checkOutBookWithTitle("Unavailable Title") == null);
         assertTrue(library.checkOutBookWithTitle("Non-existent Title") == null);
         assertTrue(book.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(book) == false);
     }
 
     @Test
     public void successfullyReturnBook() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Book book = new Book("Unavailable Title", "Test Author", 2016);
-        book.setCheckedOut(true);
+        book.setCheckedOut(false);
         library.addBook(book);
 
+        library.checkOutBookWithTitle("Unavailable Title");
+
+        assertTrue(book.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(book) == true);
         assertTrue(library.returnBookWithTitle("Unavailable Title") == book);
         assertTrue(book.isAvailable() == true);
+        assertTrue(customer.hasCheckedOutItem(book) == false);
     }
 
     @Test
@@ -119,8 +142,10 @@ public class LibraryTest {
         book.setCheckedOut(false);
         library.addBook(book);
 
+        assertTrue(book.isAvailable() == true);
         assertTrue(library.returnBookWithTitle("Available Title") == null);
         assertTrue(library.returnBookWithTitle("Non-existent Title") == null);
+        assertTrue(book.isAvailable() == true);
     }
 
     @Test
@@ -186,22 +211,34 @@ public class LibraryTest {
     public void successfullyCheckOutMovie() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
         movie.setCheckedOut(false);
         library.addMovie(movie);
 
+        assertTrue(movie.isAvailable() == true);
+        assertTrue(customer.hasCheckedOutItem(movie) == false);
         assertTrue(library.checkOutMovieWithTitle("Available Title") == movie);
         assertTrue(movie.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(movie) == true);
     }
 
     @Test
     public void unsuccessfullyCheckOutMovie() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
         movie.setCheckedOut(true);
         library.addMovie(movie);
 
+        assertTrue(movie.isAvailable() == false);
         assertTrue(library.checkOutMovieWithTitle("Unavailable Title") == null);
         assertTrue(library.checkOutMovieWithTitle("Non-existent Title") == null);
         assertTrue(movie.isAvailable() == false);
@@ -211,23 +248,86 @@ public class LibraryTest {
     public void successfullyReturnMovie() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
         Movie movie = new Movie("Unavailable Title", "Test Director", 2016, 10);
-        movie.setCheckedOut(true);
+        movie.setCheckedOut(false);
         library.addMovie(movie);
 
+        library.checkOutMovieWithTitle("Unavailable Title");
+
+        assertTrue(movie.isAvailable() == false);
+        assertTrue(customer.hasCheckedOutItem(movie) == true);
         assertTrue(library.returnMovieWithTitle("Unavailable Title") == movie);
         assertTrue(movie.isAvailable() == true);
+        assertTrue(customer.hasCheckedOutItem(movie) == false);
     }
 
     @Test
     public void unsuccessfullyReturnMovie() {
         Library library = new Library("Test Library");
 
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
+        Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
+        movie.setCheckedOut(true);
+        library.addMovie(movie);
+
+        assertTrue(movie.isAvailable() == false);
+        assertTrue(library.returnMovieWithTitle("Available Title") == null);
+        assertTrue(library.returnMovieWithTitle("Non-existent Title") == null);
+        assertTrue(movie.isAvailable() == false);
+    }
+
+    @Test
+    public void loginSuccessful() {
+        Library library = new Library("Test Library");
+
+        Librarian librarian = new Librarian("000-0001", "password");
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(librarian);
+        library.addUser(customer);
+
+        assertTrue(library.login("000-0001", "password") == librarian);
+        assertTrue(library.login("111-0001", "password") == customer);
+    }
+
+    @Test
+    public void loginUnsuccessful() {
+        Library library = new Library("Test Library");
+
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+
+        assertTrue(library.login("111-9999", "password") == null);
+        assertTrue(library.login("000-0001", "wrongpassword") == null);
+    }
+
+    @Test
+    public void getUserCheckedOutItems() {
+        Library library = new Library("Test Library");
+
+        Customer customer = new Customer("111-0001", "password", "Name", "name@email.com", "12345678");
+        library.addUser(customer);
+        library.login("111-0001", "password");
+
+        Book book = new Book("Available Title", "Test Author", 2016);
+        book.setCheckedOut(false);
+        library.addBook(book);
+
         Movie movie = new Movie("Available Title", "Test Director", 2016, 10);
         movie.setCheckedOut(false);
         library.addMovie(movie);
 
-        assertTrue(library.returnMovieWithTitle("Available Title") == null);
-        assertTrue(library.returnMovieWithTitle("Non-existent Title") == null);
+        library.checkOutBookWithTitle("Available Title");
+        library.checkOutMovieWithTitle("Available Title");
+
+        assertTrue(customer.getCheckedOutItems().size() == 2);
+        assertTrue(customer.getCheckedOutItems().contains(book) == true);
+        assertTrue(customer.getCheckedOutItems().contains(movie) == true);
     }
 }
